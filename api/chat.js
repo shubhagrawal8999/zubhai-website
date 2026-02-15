@@ -1,7 +1,6 @@
-// api/chat.js – corrected (no external modules)
+// api/chat.js – with detailed error logging
 
 export default async function handler(req, res) {
-  // Only allow POST
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -14,19 +13,12 @@ export default async function handler(req, res) {
 
   const systemPrompt = {
     role: 'system',
-    content: `You are a professional sales assistant for Zubhai, an AI automation agency.
-Your goal is to answer questions about our services, showcase expertise, and gently guide the user to book a free consultation.
-Be concise, friendly, and use natural language.
-If the user asks about pricing, mention it's custom and a consultation is free.
-If the user shows interest in booking, provide this link: https://calendly.com/yourname/30min (replace with actual link)
-Never invent facts about the company. Stick to the services: AI agents, workflow automation, analytics.
-Keep responses under 3 sentences.`
+    content: `You are a professional sales assistant for Zubhai...` // (your prompt)
   };
 
   const fullMessages = [systemPrompt, ...messages];
 
   try {
-    // Use global fetch (Node 18+)
     const openaiRes = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -41,18 +33,25 @@ Keep responses under 3 sentences.`
       })
     });
 
+    // Log the response status for debugging
+    console.log('OpenAI response status:', openaiRes.status);
+
     const data = await openaiRes.json();
 
     if (!openaiRes.ok) {
-      console.error('OpenAI error:', data);
-      return res.status(500).json({ error: 'OpenAI API error' });
+      // Log the full error from OpenAI
+      console.error('OpenAI error details:', JSON.stringify(data, null, 2));
+      return res.status(500).json({ 
+        error: 'OpenAI API error',
+        details: data.error || 'Unknown error' 
+      });
     }
 
     const assistantMessage = data.choices[0].message.content;
     return res.status(200).json({ reply: assistantMessage });
 
   } catch (error) {
-    console.error(error);
+    console.error('Fetch or other error:', error.message);
     return res.status(500).json({ error: 'Internal server error' });
   }
 }
