@@ -1,8 +1,4 @@
-
-// api/chat.js
-// Vercel serverless function – calls OpenAI API
-
-const fetch = require('node-fetch'); // included in Vercel runtime
+// api/chat.js – corrected (no external modules)
 
 export default async function handler(req, res) {
   // Only allow POST
@@ -16,7 +12,6 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Invalid messages array' });
   }
 
-  // System prompt: defines the AI's role
   const systemPrompt = {
     role: 'system',
     content: `You are a professional sales assistant for Zubhai, an AI automation agency.
@@ -28,10 +23,10 @@ Never invent facts about the company. Stick to the services: AI agents, workflow
 Keep responses under 3 sentences.`
   };
 
-  // Prepend system message to conversation
   const fullMessages = [systemPrompt, ...messages];
 
   try {
+    // Use global fetch (Node 18+)
     const openaiRes = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
