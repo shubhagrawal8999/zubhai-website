@@ -1,5 +1,6 @@
+// script.js – Full version with OpenAI chatbot
 
-// Mobile menu toggle
+// --- Mobile Menu ---
 const hamburger = document.querySelector('.hamburger');
 const navLinks = document.querySelector('.nav-links');
 
@@ -7,7 +8,15 @@ hamburger.addEventListener('click', () => {
   navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
 });
 
-// CHAT WIDGET UI
+// --- CHATBOT STATE ---
+let leadInfo = {
+  name: '',
+  email: '',
+  collected: false
+};
+let conversationHistory = []; // stores { role, content }
+
+// --- DOM Elements ---
 const chatButton = document.getElementById('chatButton');
 const chatPanel = document.getElementById('chatPanel');
 const closeChat = document.getElementById('closeChat');
@@ -15,37 +24,91 @@ const chatMessages = document.getElementById('chatMessages');
 const userInput = document.getElementById('userInput');
 const sendButton = document.getElementById('sendMessage');
 
-// Open chat
-chatButton.addEventListener('click', () => {
+// --- Open / Close ---
+chatButton.addEventListener('click', openChat);
+closeChat.addEventListener('click', closeChatHandler);
+document.getElementById('open-chat-btn').addEventListener('click', (e) => {
+  e.preventDefault();
+  openChat();
+});
+
+function openChat() {
   chatPanel.classList.add('active');
   userInput.disabled = false;
   userInput.focus();
-});
+}
 
-// Close chat
-closeChat.addEventListener('click', () => {
+function closeChatHandler() {
   chatPanel.classList.remove('active');
-});
+}
 
-// Placeholder: we will add real AI chat logic in Stage 7
-// For now, just a simple echo to test UI
+// --- Send Message ---
 sendButton.addEventListener('click', sendMessage);
 userInput.addEventListener('keypress', (e) => {
   if (e.key === 'Enter') sendMessage();
 });
 
-function sendMessage() {
-  const msg = userInput.value.trim();
-  if (!msg) return;
+async function sendMessage() {
+  const text = userInput.value.trim();
+  if (!text) return;
 
-  // Add user message to chat
-  addMessage(msg, 'user');
+  // Display user message
+  addMessage(text, 'user');
   userInput.value = '';
 
-  // Simulate bot response (temporary)
-  setTimeout(() => {
-    addMessage("Thanks for your message! The AI assistant will be active after Stage 7.", 'bot');
-  }, 500);
+  // --- LEAD CAPTURE LOGIC ---
+  if (!leadInfo.collected) {
+    // Expecting name and email in format: "John john@example.com"
+    const parts = text.split(' ');
+    const possibleEmail = parts.find(p => p.includes('@') && p.includes('.'));
+    if (parts.length >= 2 && possibleEmail) {
+      // Assume first word is name, and email is the word with '@'
+      leadInfo.name = parts[0];
+      leadInfo.email = possibleEmail;
+      leadInfo.collected = true;
+      addMessage(`Thanks ${leadInfo.name}! How can I assist you today?`, 'bot');
+      // Start conversation history for AI
+      conversationHistory.push({ role: 'user', content: `My name is ${leadInfo.name}, email ${leadInfo.email}` });
+      conversationHistory.push({ role: 'assistant', content: `Thanks ${leadInfo.name}! How can I assist you today?` });
+      return;
+    } else {
+      addMessage('Please provide your name and email (e.g., "John john@example.com") so I can help you.', 'bot');
+      return;
+    }
+  }
+
+  // --- AFTER LEAD COLLECTED: use OpenAI ---
+  // Show typing indicator (optional)
+  userInput.disabled = true;
+  sendButton.disabled = true;
+
+  // Add user message to conversation history
+  conversationHistory.push({ role: 'user', content: text });
+
+  try {
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: conversationHistory })
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      const botReply = data.reply;
+      addMessage(botReply, 'bot');
+      conversationHistory.push({ role: 'assistant', content: botReply });
+    } else {
+      addMessage('Sorry, I encountered an error. Please try again later.', 'bot');
+    }
+  } catch (error) {
+    console.error(error);
+    addMessage('Network error. Please check your connection.', 'bot');
+  } finally {
+    userInput.disabled = false;
+    sendButton.disabled = false;
+    userInput.focus();
+  }
 }
 
 function addMessage(text, sender) {
@@ -56,17 +119,9 @@ function addMessage(text, sender) {
   chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
-// "Start Chat" button in hero triggers chat open
-document.getElementById('open-chat-btn').addEventListener('click', (e) => {
-  e.preventDefault();
-  chatPanel.classList.add('active');
-  userInput.disabled = false;
-  userInput.focus();
-});
-
-// Calendly booking (placeholder – replace with your Calendly link)
+// --- Calendly booking (edit with your own link) ---
 document.getElementById('book-calendly').addEventListener('click', (e) => {
   e.preventDefault();
-  alert('Replace this with your Calendly link. Example: https://calendly.com/yourname/30min');
-  // In production: window.open('YOUR_CALENDLY_URL', '_blank');
+  // Replace with your actual Calendly URL
+  window.open('https://calendly.com/yourname/30min', '_blank');
 });
