@@ -57,23 +57,62 @@ async function sendMessage() {
   userInput.value = '';
 
   // --- LEAD CAPTURE LOGIC ---
+// --- LEAD CAPTURE LOGIC (Improved) ---
 if (!leadInfo.collected) {
-  const parts = text.split(' ');
-  const possibleEmail = parts.find(p => p.includes('@') && p.includes('.'));
+  // Regular expression to find an email address
+  const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/;
+  const emailMatch = text.match(emailRegex);
   
-  if (possibleEmail) {
-    // Assume first part before email is name, or use "there" if no name given
-    const emailIndex = parts.indexOf(possibleEmail);
-    let name = 'there';
-    if (emailIndex > 0) {
-      name = parts.slice(0, emailIndex).join(' ');
-    } else if (parts.length > 1 && emailIndex === 0 && parts.length > 1) {
-      // email first, then maybe name after?
-      name = parts.slice(1).join(' ') || 'there';
+  if (emailMatch) {
+    const email = emailMatch[0];
+    
+    // Try to extract name: look for words before the email
+    const textBeforeEmail = text.substring(0, emailMatch.index).trim();
+    let name = 'there'; // default if no name found
+    
+    if (textBeforeEmail.length > 0) {
+      // Common patterns: "my name is X", "I'm X", or just the first word
+      // First, check for "name is" or "i am" patterns
+      const namePatterns = [
+        /(?:my name is|i am|i'm|this is)\s+([a-zA-Z]+)/i,
+        /(?:call me|name'?s)\s+([a-zA-Z]+)/i
+      ];
+      
+      for (let pattern of namePatterns) {
+        const match = textBeforeEmail.match(pattern);
+        if (match) {
+          name = match[1];
+          break;
+        }
+      }
+      
+      // If no pattern matched, take the last word before email (often the name)
+      if (name === 'there') {
+        const words = textBeforeEmail.split(/\s+/);
+        // Filter out common filler words
+        const fillerWords = ['my', 'name', 'is', 'i', 'am', 'im', 'this', 'and', 'email'];
+        const possibleNameWords = words.filter(w => !fillerWords.includes(w.toLowerCase()));
+        if (possibleNameWords.length > 0) {
+          name = possibleNameWords[possibleNameWords.length - 1]; // last non-filler word
+        } else {
+          // fallback to last word
+          name = words[words.length - 1];
+        }
+      }
     }
-    leadInfo.name = name.trim();
-    leadInfo.email = possibleEmail;
+    
+    // Clean up name (capitalize first letter, remove punctuation)
+    name = name.replace(/[^a-zA-Z]/g, ''); // remove non-letters
+    if (name.length > 0) {
+      name = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+    } else {
+      name = 'there';
+    }
+    
+    leadInfo.name = name;
+    leadInfo.email = email;
     leadInfo.collected = true;
+    
     addMessage(`Thanks ${leadInfo.name}! How can I assist you today?`, 'bot');
     conversationHistory.push({ role: 'user', content: `My name is ${leadInfo.name}, email ${leadInfo.email}` });
     conversationHistory.push({ role: 'assistant', content: `Thanks ${leadInfo.name}! How can I assist you today?` });
@@ -83,52 +122,3 @@ if (!leadInfo.collected) {
     return;
   }
 }
-
-  // --- AFTER LEAD COLLECTED: use OpenAI ---
-  // Show typing indicator (optional)
-  userInput.disabled = true;
-  sendButton.disabled = true;
-
-  // Add user message to conversation history
-  conversationHistory.push({ role: 'user', content: text });
-
-  try {
-    const response = await fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: conversationHistory })
-    });
-
-    const data = await response.json();
-
-    if (response.ok) {
-      const botReply = data.reply;
-      addMessage(botReply, 'bot');
-      conversationHistory.push({ role: 'assistant', content: botReply });
-    } else {
-      addMessage('Sorry, I encountered an error. Please try again later.', 'bot');
-    }
-  } catch (error) {
-    console.error(error);
-    addMessage('Network error. Please check your connection.', 'bot');
-  } finally {
-    userInput.disabled = false;
-    sendButton.disabled = false;
-    userInput.focus();
-  }
-}
-
-function addMessage(text, sender) {
-  const messageDiv = document.createElement('div');
-  messageDiv.classList.add('message', `${sender}-message`);
-  messageDiv.textContent = text;
-  chatMessages.appendChild(messageDiv);
-  chatMessages.scrollTop = chatMessages.scrollHeight;
-}
-
-// --- Calendly booking (edit with your own link) ---
-document.getElementById('book-calendly').addEventListener('click', (e) => {
-  e.preventDefault();
-  // Replace with your actual Calendly URL
-  window.open('https://calendly.com/yourname/30min', '_blank');
-});
