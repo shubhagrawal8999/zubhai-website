@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://zubhai.com/sitemap.xml
