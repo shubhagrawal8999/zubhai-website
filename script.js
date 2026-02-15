@@ -57,25 +57,32 @@ async function sendMessage() {
   userInput.value = '';
 
   // --- LEAD CAPTURE LOGIC ---
-  if (!leadInfo.collected) {
-    // Expecting name and email in format: "John john@example.com"
-    const parts = text.split(' ');
-    const possibleEmail = parts.find(p => p.includes('@') && p.includes('.'));
-    if (parts.length >= 2 && possibleEmail) {
-      // Assume first word is name, and email is the word with '@'
-      leadInfo.name = parts[0];
-      leadInfo.email = possibleEmail;
-      leadInfo.collected = true;
-      addMessage(`Thanks ${leadInfo.name}! How can I assist you today?`, 'bot');
-      // Start conversation history for AI
-      conversationHistory.push({ role: 'user', content: `My name is ${leadInfo.name}, email ${leadInfo.email}` });
-      conversationHistory.push({ role: 'assistant', content: `Thanks ${leadInfo.name}! How can I assist you today?` });
-      return;
-    } else {
-      addMessage('Please provide your name and email (e.g., "John john@example.com") so I can help you.', 'bot');
-      return;
+if (!leadInfo.collected) {
+  const parts = text.split(' ');
+  const possibleEmail = parts.find(p => p.includes('@') && p.includes('.'));
+  
+  if (possibleEmail) {
+    // Assume first part before email is name, or use "there" if no name given
+    const emailIndex = parts.indexOf(possibleEmail);
+    let name = 'there';
+    if (emailIndex > 0) {
+      name = parts.slice(0, emailIndex).join(' ');
+    } else if (parts.length > 1 && emailIndex === 0 && parts.length > 1) {
+      // email first, then maybe name after?
+      name = parts.slice(1).join(' ') || 'there';
     }
+    leadInfo.name = name.trim();
+    leadInfo.email = possibleEmail;
+    leadInfo.collected = true;
+    addMessage(`Thanks ${leadInfo.name}! How can I assist you today?`, 'bot');
+    conversationHistory.push({ role: 'user', content: `My name is ${leadInfo.name}, email ${leadInfo.email}` });
+    conversationHistory.push({ role: 'assistant', content: `Thanks ${leadInfo.name}! How can I assist you today?` });
+    return;
+  } else {
+    addMessage('Please provide your email address so I can help you. (e.g., "john@example.com")', 'bot');
+    return;
   }
+}
 
   // --- AFTER LEAD COLLECTED: use OpenAI ---
   // Show typing indicator (optional)
