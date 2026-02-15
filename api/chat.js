@@ -19,14 +19,14 @@ export default async function handler(req, res) {
   const fullMessages = [systemPrompt, ...messages];
 
   try {
-    const openaiRes = await fetch('https://api.openai.com/v1/chat/completions', {
+    const openaiRes = await fetch('https://api.deepseek.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
+        'Authorization': `Bearer ${process.env.DEEPSEEK_API_KEY}`
       },
       body: JSON.stringify({
-        model: 'gpt-3.5-turbo',
+        model: 'deepseek-chat',
         messages: fullMessages,
         max_tokens: 150,
         temperature: 0.7
