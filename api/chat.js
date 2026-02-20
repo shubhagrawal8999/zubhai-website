@@ -1,5 +1,3 @@
-// api/chat.js – with detailed error logging
-
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -13,45 +11,38 @@ export default async function handler(req, res) {
 
   const systemPrompt = {
     role: 'system',
-    content: `You are a professional sales assistant for Zubhai...` // (your prompt)
+    content: `You are a professional sales assistant for Zubhai...` // your prompt
   };
 
   const fullMessages = [systemPrompt, ...messages];
 
   try {
-    const openaiRes = await fetch('https://api.deepseek.com/v1/chat/completions', {
+    const openaiRes = await fetch('https://api.deepseek.com/v1/chat/completions', {  // ✅ DeepSeek URL
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.DEEPSEEK_API_KEY}`
+        'Authorization': `Bearer ${process.env.DEEPSEEK_API_KEY}`  // ✅ Correct env var
       },
       body: JSON.stringify({
-        model: 'deepseek-chat',
+        model: 'deepseek-chat',  // ✅ DeepSeek model
         messages: fullMessages,
         max_tokens: 150,
         temperature: 0.7
       })
     });
 
-    // Log the response status for debugging
-    console.log('OpenAI response status:', openaiRes.status);
-
     const data = await openaiRes.json();
 
     if (!openaiRes.ok) {
-      // Log the full error from OpenAI
-      console.error('OpenAI error details:', JSON.stringify(data, null, 2));
-      return res.status(500).json({ 
-        error: 'OpenAI API error',
-        details: data.error || 'Unknown error' 
-      });
+      console.error('DeepSeek error:', data);
+      return res.status(500).json({ error: 'DeepSeek API error', details: data.error });
     }
 
     const assistantMessage = data.choices[0].message.content;
     return res.status(200).json({ reply: assistantMessage });
 
   } catch (error) {
-    console.error('Fetch or other error:', error.message);
+    console.error(error);
     return res.status(500).json({ error: 'Internal server error' });
   }
 }
