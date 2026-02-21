@@ -1,4 +1,3 @@
-
 /* ---------- GLOBAL ---------- */
 :root {
   --navy: #0A192F;
@@ -45,6 +44,7 @@ h2 {
   position: relative;
   display: inline-block;
 }
+
 h2:after {
   content: '';
   position: absolute;
@@ -77,6 +77,7 @@ a {
   background: var(--teal);
   color: var(--navy);
 }
+
 .btn-primary:hover {
   background: transparent;
   border-color: var(--teal);
@@ -88,6 +89,7 @@ a {
   border-color: var(--teal);
   color: var(--teal);
 }
+
 .btn-secondary:hover {
   background: var(--teal);
   color: var(--navy);
@@ -122,14 +124,17 @@ header {
   list-style: none;
   gap: 2rem;
 }
+
 .nav-links a {
   color: var(--light-slate);
   font-weight: 500;
   transition: color 0.3s;
 }
+
 .nav-links a:hover {
   color: var(--teal);
 }
+
 .hamburger {
   display: none;
   font-size: 1.5rem;
@@ -147,14 +152,23 @@ header {
   align-items: center;
 }
 
+.eyebrow {
+  color: var(--teal);
+  font-size: 0.95rem;
+  margin-bottom: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+}
+
 .hero-content h1 {
   font-size: 3.2rem;
   line-height: 1.2;
   margin-bottom: 1rem;
+  max-width: 14ch;
 }
 
 .subhead {
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   color: var(--slate);
   margin-bottom: 2rem;
   max-width: 700px;
@@ -164,6 +178,20 @@ header {
   display: flex;
   gap: 1rem;
   flex-wrap: wrap;
+}
+
+.trust-bar {
+  margin-top: 1.6rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+  color: var(--light-slate);
+  font-size: 0.95rem;
+}
+
+.trust-bar i {
+  color: var(--teal);
+  margin-right: 0.4rem;
 }
 
 /* ---------- SERVICES ---------- */
@@ -186,18 +214,55 @@ header {
   transition: transform 0.3s;
   border: 1px solid rgba(100, 255, 218, 0.1);
 }
+
 .service-card:hover {
   transform: translateY(-8px);
   border-color: var(--teal);
 }
+
 .service-card i {
   margin-bottom: 1rem;
   color: var(--teal);
 }
+
 .service-card h3 {
   margin-bottom: 0.8rem;
 }
+
 .service-card p {
+  color: var(--slate);
+}
+
+/* ---------- PROCESS ---------- */
+.process {
+  padding: 5rem 0;
+}
+
+.process-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.process-step {
+  background: var(--light-navy);
+  border: 1px solid rgba(100, 255, 218, 0.15);
+  border-radius: 12px;
+  padding: 1.6rem;
+}
+
+.process-step span {
+  color: var(--teal);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.process-step h3 {
+  margin: 0.6rem 0;
+}
+
+.process-step p {
   color: var(--slate);
 }
 
@@ -205,10 +270,12 @@ header {
 .about {
   padding: 5rem 0;
 }
+
 .about-text p {
   margin-top: 1.2rem;
   color: var(--slate);
   font-size: 1.1rem;
+  max-width: 760px;
 }
 
 /* ---------- CASE STUDIES ---------- */
@@ -228,10 +295,12 @@ header {
   padding: 2rem;
   border-radius: 12px;
 }
+
 .case-icon i {
   color: var(--teal);
   margin-bottom: 1rem;
 }
+
 .case-card h3 {
   margin-bottom: 0.8rem;
 }
@@ -254,10 +323,32 @@ header {
   border-left: 4px solid var(--teal);
   font-style: italic;
 }
+
 .client {
   margin-top: 1.5rem;
   color: var(--teal);
   font-weight: 600;
+}
+
+/* ---------- CTA ---------- */
+.cta-strip {
+  padding: 3.5rem 0;
+  background: linear-gradient(90deg, #10315b 0%, #0a1f39 100%);
+}
+
+.cta-strip-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.cta-strip h2 {
+  margin: 0;
+}
+
+.cta-strip h2::after {
+  display: none;
 }
 
 /* ---------- FOOTER ---------- */
@@ -284,11 +375,13 @@ footer {
   display: flex;
   gap: 1.5rem;
 }
+
 .footer-links a {
   color: var(--slate);
   font-size: 1.3rem;
   transition: color 0.3s;
 }
+
 .footer-links a:hover {
   color: var(--teal);
 }
@@ -317,9 +410,10 @@ footer {
   color: var(--navy);
   font-size: 1.8rem;
   cursor: pointer;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   transition: 0.3s;
 }
+
 .chat-button:hover {
   transform: scale(1.1);
 }
@@ -332,7 +426,7 @@ footer {
   height: 500px;
   background: var(--white);
   border-radius: 16px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
   display: none;
   flex-direction: column;
   overflow: hidden;
@@ -352,11 +446,13 @@ footer {
   align-items: center;
   font-weight: 600;
 }
+
 .chat-header i {
   cursor: pointer;
   color: var(--slate);
   transition: color 0.3s;
 }
+
 .chat-header i:hover {
   color: var(--teal);
 }
@@ -407,6 +503,7 @@ footer {
   outline: none;
   font-family: inherit;
 }
+
 .chat-input-area button {
   background: var(--teal);
   border: none;
@@ -419,6 +516,7 @@ footer {
   cursor: pointer;
   transition: 0.3s;
 }
+
 .chat-input-area button:hover {
   background: var(--navy);
   color: var(--teal);
@@ -426,22 +524,55 @@ footer {
 
 /* ---------- RESPONSIVE ---------- */
 @media (max-width: 768px) {
-  h1 { font-size: 2.5rem; }
-  h2 { font-size: 2rem; }
+  h1 {
+    font-size: 2.5rem;
+  }
+
+  h2 {
+    font-size: 2rem;
+  }
 
   .nav-links {
     display: none;
+    position: absolute;
+    top: 72px;
+    right: 5%;
+    background: var(--light-navy);
+    border: 1px solid rgba(100, 255, 218, 0.15);
+    border-radius: 10px;
+    padding: 1rem;
+    flex-direction: column;
+    min-width: 180px;
   }
+
+  .nav-links.active {
+    display: flex;
+  }
+
   .hamburger {
     display: block;
   }
+
   .hero-container {
     flex-direction: column;
     text-align: center;
   }
-  .hero-buttons {
+
+  .hero-content h1,
+  .subhead {
+    max-width: none;
+  }
+
+  .hero-buttons,
+  .trust-bar {
     justify-content: center;
   }
+
+  .cta-strip-inner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
   .chat-panel {
     width: 300px;
     right: 0;
