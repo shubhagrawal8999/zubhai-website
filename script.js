@@ -77,7 +77,48 @@ if (openChatBtn) {
   });
 }
 
+const calendlyUrl = 'https://calendly.com/shubzz429/new-meeting';
 const calendlyButtons = ['book-calendly', 'book-calendly-footer'];
+const makeWebhookUrl = document.body?.dataset?.makeWebhookUrl || '';
+
+function notifyLeadWithImageBeacon(lead) {
+  if (!makeWebhookUrl) {
+    return;
+  }
+
+  try {
+    const webhookUrl = new URL(makeWebhookUrl);
+    webhookUrl.searchParams.set('event', 'chat_lead_captured');
+    webhookUrl.searchParams.set('timestamp', new Date().toISOString());
+    webhookUrl.searchParams.set('name', lead.name || '');
+    webhookUrl.searchParams.set('email', lead.email || '');
+    webhookUrl.searchParams.set('source', lead.source || 'website-chat');
+    webhookUrl.searchParams.set('context', lead.context || 'lead-captured');
+    webhookUrl.searchParams.set('firstMessage', lead.firstMessage || '');
+
+    const beacon = new Image();
+    beacon.src = webhookUrl.toString();
+  } catch (error) {
+    console.error('Lead beacon fallback error:', error);
+  }
+}
+
+async function notifyNewLead(lead) {
+  try {
+    const response = await fetch('/api/lead', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(lead)
+    });
+
+    if (!response.ok) {
+      notifyLeadWithImageBeacon(lead);
+    }
+  } catch (error) {
+    notifyLeadWithImageBeacon(lead);
+    console.error('Lead capture automation error:', error);
+  }
+}
 calendlyButtons.forEach((id) => {
   const button = document.getElementById(id);
   if (!button) {
@@ -86,7 +127,7 @@ calendlyButtons.forEach((id) => {
 
   button.addEventListener('click', (event) => {
     event.preventDefault();
-    window.open('https://calendly.com/yourname/30min', '_blank');
+    window.open(calendlyUrl, '_blank', 'noopener,noreferrer');
   });
 });
 
@@ -156,6 +197,14 @@ async function sendMessage() {
     leadInfo.name = name;
     leadInfo.email = email;
     leadInfo.collected = true;
+
+    notifyNewLead({
+      name: leadInfo.name,
+      email: leadInfo.email,
+      source: 'website-chat',
+      context: 'lead-captured',
+      firstMessage: text
+    });
 
     const greeting = `Thanks ${leadInfo.name}! How can I assist you today?`;
     addMessage(greeting, 'bot');
