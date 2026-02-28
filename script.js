@@ -104,6 +104,29 @@ function notifyLeadWithImageBeacon(lead) {
 }
 
 async function notifyNewLead(lead) {
+  if (makeWebhookUrl) {
+    try {
+      const webhookResponse = await fetch(makeWebhookUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          event: 'chat_lead_captured',
+          timestamp: new Date().toISOString(),
+          ...lead
+        })
+      });
+
+      if (webhookResponse.ok) {
+        return;
+      }
+    } catch (error) {
+      console.error('Direct Make webhook error:', error);
+    }
+
+    notifyLeadWithImageBeacon(lead);
+    return;
+  }
+
   try {
     const response = await fetch('/api/lead', {
       method: 'POST',
