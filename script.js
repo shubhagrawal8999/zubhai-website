@@ -79,54 +79,8 @@ if (openChatBtn) {
 
 const calendlyUrl = 'https://calendly.com/shubzz429/new-meeting';
 const calendlyButtons = ['book-calendly', 'book-calendly-footer'];
-const makeWebhookUrl = document.body?.dataset?.makeWebhookUrl || '';
-
-function notifyLeadWithImageBeacon(lead) {
-  if (!makeWebhookUrl) {
-    return;
-  }
-
-  try {
-    const webhookUrl = new URL(makeWebhookUrl);
-    webhookUrl.searchParams.set('event', 'chat_lead_captured');
-    webhookUrl.searchParams.set('timestamp', new Date().toISOString());
-    webhookUrl.searchParams.set('name', lead.name || '');
-    webhookUrl.searchParams.set('email', lead.email || '');
-    webhookUrl.searchParams.set('source', lead.source || 'website-chat');
-    webhookUrl.searchParams.set('context', lead.context || 'lead-captured');
-    webhookUrl.searchParams.set('firstMessage', lead.firstMessage || '');
-
-    const beacon = new Image();
-    beacon.src = webhookUrl.toString();
-  } catch (error) {
-    console.error('Lead beacon fallback error:', error);
-  }
-}
 
 async function notifyNewLead(lead) {
-  if (makeWebhookUrl) {
-    try {
-      const webhookResponse = await fetch(makeWebhookUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          event: 'chat_lead_captured',
-          timestamp: new Date().toISOString(),
-          ...lead
-        })
-      });
-
-      if (webhookResponse.ok) {
-        return;
-      }
-    } catch (error) {
-      console.error('Direct Make webhook error:', error);
-    }
-
-    notifyLeadWithImageBeacon(lead);
-    return;
-  }
-
   try {
     const response = await fetch('/api/lead', {
       method: 'POST',
@@ -135,10 +89,9 @@ async function notifyNewLead(lead) {
     });
 
     if (!response.ok) {
-      notifyLeadWithImageBeacon(lead);
+      console.error('Lead capture automation error:', response.status);
     }
   } catch (error) {
-    notifyLeadWithImageBeacon(lead);
     console.error('Lead capture automation error:', error);
   }
 }
@@ -250,15 +203,17 @@ async function sendMessage() {
       })
     });
 
-    const data = await response.json();
+    const data = await response.json().catch(() => ({}));
 
     if (response.ok) {
       const botReply = data.reply;
       addMessage(botReply, 'bot');
       pushHistory({ role: 'assistant', content: botReply });
     } else {
-      addMessage('Sorry, I encountered an error. Please try again later.', 'bot');
-      console.error('API error:', data);
+      const fallbackError = 'Sorry, I encountered an error. Please try again later.';
+      const apiError = typeof data.error === 'string' ? data.error : fallbackError;
+      addMessage(apiError, 'bot');
+      console.error('API error:', response.status, data);
     }
   } catch (error) {
     console.error('Network error:', error);

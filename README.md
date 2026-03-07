@@ -57,4 +57,4 @@ To automate this in Make:
 Webhook payload event for lead capture: `chat_lead_captured`.
 
 
-If your Vercel deployment cannot run serverless functions on your current plan/setup, you can still send leads directly from the browser: set `data-make-webhook-url` on the `<body>` tag in `index.html` to your Make custom webhook URL. The site will fall back to this direct method if `/api/lead` is unavailable.
+Security note: do not hardcode your Make webhook URL in `index.html` or any client-side JavaScript. Keep it only in Vercel environment variables so it is not publicly exposed in page source.

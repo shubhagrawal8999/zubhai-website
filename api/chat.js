@@ -155,8 +155,18 @@ async function requestDeepSeek(messages) {
       signal: controller.signal
     });
 
-    const data = await deepseekRes.json();
-    return { deepseekRes, data };
+    const raw = await deepseekRes.text();
+    let data = {};
+
+    if (raw) {
+      try {
+        data = JSON.parse(raw);
+      } catch {
+        data = {};
+      }
+    }
+
+    return { deepseekRes, data, raw };
   } finally {
     clearTimeout(timeout);
   }
@@ -198,10 +208,10 @@ export default async function handler(req, res) {
   const fullMessages = [buildSystemPrompt(), ...trimmedMessages];
 
   try {
-    const { deepseekRes, data } = await requestDeepSeek(fullMessages);
+    const { deepseekRes, data, raw } = await requestDeepSeek(fullMessages);
 
     if (!deepseekRes.ok) {
-      console.error('DeepSeek error status:', deepseekRes.status);
+      console.error('DeepSeek error status:', deepseekRes.status, raw.slice(0, 500));
       return res.status(502).json({ error: 'AI provider error' });
     }
 
