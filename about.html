@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="About Zubhai and founder Shubh Agrawal. Founder-led AI automation delivery for operations teams.">
+  <title>About | Zubhai</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <script>
+    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+  </script>
+  <script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body>
+<header>
+  <div class="container header-container">
+    <a href="/" class="logo" aria-label="Zubhai home">
+      <span class="logo-mark" aria-hidden="true"><span class="bot-antenna"></span><span class="bot-face"><span class="bot-eye"></span><span class="bot-eye"></span><span class="bot-smile"></span></span></span>
+      <span class="logo-text">ZUBHAI</span>
+    </a>
+    <nav>
+      <ul class="nav-links" id="navLinks">
+        <li><a data-nav="/" href="/">Home</a></li>
+        <li><a data-nav="/services" href="/services">Services</a></li>
+        <li><a data-nav="/about" href="/about">About</a></li>
+        <li><a data-nav="/work" href="/work">Work</a></li>
+        <li><a data-nav="/contact" href="/contact">Contact</a></li>
+        <li><a href="https://calendly.com/shubzz429/new-meeting" target="_blank" rel="noopener noreferrer" class="btn btn-primary nav-cta">Book a Call</a></li>
+      </ul>
+      <button class="hamburger" aria-label="Toggle navigation"><i class="fas fa-bars"></i></button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="page-hero">
+    <div class="container narrow">
+      <p class="eyebrow">About</p>
+      <h1>Founder-led execution for teams that care about operational outcomes</h1>
+      <p class="subhead">Zubhai is run by Shubh Agrawal, focused on building practical AI systems that reduce repetitive work and improve decision quality.</p>
+    </div>
+  </section>
+
+  <section class="section-pad">
+    <div class="container about-grid">
+      <article class="card">
+        <h2>Founder</h2>
+        <p>Shubh Agrawal leads project scoping, system architecture, and delivery review across Zubhai engagements. Clients work directly with the person accountable for implementation quality.</p>
+        <p>Focus areas include AI-assisted support, lead qualification workflows, and operations automations that connect tools without adding process overhead.</p>
+        <a class="btn btn-secondary" href="mailto:contact@zubhai.com">Email Shubh Directly</a>
+      </article>
+      <article class="card">
+        <h2>Mission</h2>
+        <p>Zubhai exists to help small and mid-sized teams operate with the speed and consistency of larger organizations. The mission is practical: reduce manual execution load and improve response quality where it affects revenue and retention.</p>
+        <p>Every engagement is designed around clear operating constraints, realistic rollout steps, and measurable process improvements.</p>
+        <a class="btn btn-secondary" href="/services">See Delivery Scope</a>
+      </article>
+    </div>
+  </section>
+
+  <section class="surface section-pad">
+    <div class="container">
+      <h2>Trust signals without hype</h2>
+      <div class="trust-grid">
+        <article class="trust-card">
+          <h3>Transparent process</h3>
+          <p>Discovery, implementation, QA, launch, and optimization stages are documented and shared before work begins.</p>
+        </article>
+        <article class="trust-card">
+          <h3>Stack clarity</h3>
+          <p>Typical tools include Vercel serverless APIs, CRM automations, workflow routers, and performance dashboards.</p>
+          <div class="badge-row"><span>Vercel</span><span>Node.js</span><span>Webhook Automation</span><span>CRM Integrations</span></div>
+        </article>
+        <article class="trust-card">
+          <h3>Direct communication</h3>
+          <p>No account-manager relay. You get direct founder contact for scope decisions and delivery status.</p>
+          <a class="inline-link" href="/contact">Book with Shubh</a>
+        </article>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="container footer-container">
+    <div class="footer-logo">ZUBHAI</div>
+    <p>Custom AI agents and automation systems for operations-focused teams.</p>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+<style>
+  .narrow { max-width: 840px; }
+  .about-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1rem; }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); padding: 1.2rem; }
+  .trust-grid { display:grid; gap:1rem; grid-template-columns: repeat(3,minmax(0,1fr)); }
+  .trust-card { background:#fff; border:1px solid var(--line); border-radius:16px; padding:1.1rem; box-shadow:var(--shadow); }
+  .badge-row { display:flex; flex-wrap:wrap; gap:.45rem; margin-top:.7rem; }
+  .badge-row span { border:1px solid var(--line); border-radius:999px; font-size:.75rem; padding:.25rem .6rem; color:var(--text); background:#f8faff; }
+  .inline-link { color: var(--primary); font-weight: 600; }
+  @media (max-width:920px){ .about-grid,.trust-grid { grid-template-columns:1fr; } }
+</style>
+</body>
+</html>
